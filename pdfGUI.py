@@ -15,12 +15,11 @@ class PDFGUI:
 
     def __init__(self, master):  # master is the parent widget
         self.master = master    # form
-        master.title('IceQuinn\'s PDFReader')
+        master.title('IceQuinn\'s PDFReader')   # Window's Title
+        scrollBar = Scrollbar(self.master)  # Unsure of what to put in
 
 
-        # ========== String Variables =============
-
-
+        # ========== Parent Tab =============
         self.tab_parent = ttk.Notebook(self.master)
         # =========== Tabs (Tab control) ===========
         self.editorTab = ttk.Frame(self.tab_parent)
@@ -35,23 +34,25 @@ class PDFGUI:
         #  Editor Tab
         # =================================
         # Need more time for this feature
+        selection_btn = ttk.Button(self.editorTab, text="SELECT PDF")
+        selection_btn.place(x=500, y=40)
 
         # =================================
         #  Merge Tab
         # =================================
-        ttk.Entry(self.mergeTab).grid(column=0, row=1, pady=20, padx=20)
+        ttk.Entry(self.mergeTab).place(x=10, y=10)
         ttk.Button(self.mergeTab, text="Select PDF",
-                   command=self.browseMultiPDF).grid(column=0, row=0, pady=20, padx=20)   # Select pdf
+                   command=self.browseMultiPDF).place(x=50, y=50)   # Select pdf
 
-        ttk.Button(self.mergeTab, text="MERGE TAB").grid(column=1, row=1, pady=20, padx=20) # Merge pdf
+        ttk.Button(self.mergeTab, text="MERGE TAB").place(x=100, y=100) # Merge pdf
 
         # =================================
         # Split Tab
         # =================================
-        self.split_pdf = StringVar()        # The selected pdf for splitting
+        self.split_pdf = StringVar()                # The selected pdf for splitting
         self.split_pdf.set('hi')
         self.top=ttk.Frame(self.splitTab)
-        self.top.pack(fill=BOTH, expand=TRUE)     # Top Frame
+        self.top.pack(fill=BOTH, expand=TRUE)       # Top Frame
         self.bottom=ttk.Frame(self.splitTab)
         self.bottom.pack(side=BOTTOM, fill=BOTH, expand=TRUE)   # Bottom Frame
         ttk.Button(self.top, text="Select PDF",
@@ -63,48 +64,65 @@ class PDFGUI:
         # =================================
         # Encryption Tab (Need to Beautify it)
         # =================================
-        self.pdf_name = StringVar()     # Default blank
-        self.lock_pdf = StringVar()     # Default blank
-        self.password = StringVar()     # Default blank
+        self.lock_infile = StringVar()          # Chosen Unlock PDF
+        self.lock_outfile = StringVar()         # Output locked PDF
+        self.lock_password = StringVar()        # Password to lock PDF
 
         # Select PDF
         ttk.Button(self.encryptTab, text="Select PDF",
                    command=self.browseOnePDF).grid(
             column=5, row=1, pady=20, padx=20, ipady=20, ipadx=40)
-        ttk.Label(self.encryptTab, textvariable=self.pdf_name).grid(column=0, row=2, pady=20, padx=20)
+        ttk.Label(self.encryptTab, textvariable=self.lock_infile).grid(column=0, row=2, pady=20, padx=20)
 
         # Encryption File Name
-        self.lock_pdf_field = ttk.Entry(self.encryptTab, textvariable=self.lock_pdf)    # Entry Widget Name
+        self.lock_pdf_field = ttk.Entry(self.encryptTab, textvariable=self.lock_outfile)    # Entry Widget Name
         self.lock_pdf_field.grid(column=1,row=3,pady=20,padx=20)
         ttk.Label(self.encryptTab, text='Encrypted File Name: ').grid(column=0,row=3,pady=20,padx=20)
 
 
 
         # Password
-        self.password_field = ttk.Entry(self.encryptTab, show="**", textvariable=self.password)    # Password Widget Name
+        self.password_field = ttk.Entry(self.encryptTab, show="**", textvariable=self.lock_password)    # Password Widget Name
         self.password_field.grid(column=0, row=4, pady=20, padx=20)     # Add Password Widget
         ttk.Label(self.encryptTab, text='Password')
 
+        # Encryption Button
         encrypt_btn = ttk.Button(self.encryptTab, text="Encrypt PDF", command=self.lockFile)
         encrypt_btn.grid(column=0, row=5, pady=20, padx=20)
 
         # =================================
         # Decryption Tab
         # =================================
+        self.unlock_infile = StringVar()        # Chosen locked PDF
+        self.unlock_outfile = StringVar()       # Unlocked Output PDF
+        self.unlock_password = StringVar()      # Password to unlock PDF
 
-        # Parent tab configure (Adding tabs)
+        # Select PDF
+
+        # Output File Name
+
+        # Password
+
+        # Decryption Button
+
+
+        # =================================
+        # Conversion Tab (File Format Convert)
+        # =================================
+
+        # == Parent tab configure (Adding tabs)
         self.tab_parent.add(self.editorTab, text="Edit PDF")
         self.tab_parent.add(self.mergeTab, text="Merge PDF")
         self.tab_parent.add(self.splitTab, text="Split PDF")
         self.tab_parent.add(self.encryptTab, text="Encrypt PDF")
         self.tab_parent.add(self.decryptTab, text="Decrypt PDF")
         self.tab_parent.add(self.conversionTab, text="Conversion")
-        self.tab_parent.pack(side=TOP, fill=BOTH, expand=Y)
+        self.tab_parent.pack(side=TOP, fill=BOTH, expand=Y)     # Add the Parent Tab
 
 
-        # =================================
-        # Conversion Tab (File Format Convert)
-        # =================================
+    # =================================
+    # Methods
+    # =================================
 
     # Encrypt file
     def lockFile(self):
@@ -148,12 +166,14 @@ class PDFGUI:
 # Calling GUI Program
 def gui_main():
     main = tk.Tk()  # Main window object
+
     main.configure(bg='black')  # parent widget bg color
 
     # Window Size
     width_val = main.winfo_screenwidth()
     height_val = main.winfo_screenheight()
     main.geometry("%dx%d+0+0" % (width_val, height_val))
+
 
     gui = PDFGUI(main)  # Initialising GUI class
     main.protocol("WM_DELETE_WINDOW", gui.on_closing)   # Delete on closing method
