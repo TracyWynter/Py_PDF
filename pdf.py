@@ -105,4 +105,5 @@ def pdf_decrypt(ori_pdf, unlock_pdf, pw):
     # pdfWriter.write(newFile)    # Write to new pdf
 
 
-
+# Convert PDF
+# def pdf_convert:
