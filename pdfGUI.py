@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import *
 # from tkinter.ttk import *   # Style
 from tkinter import messagebox as mb
-from Py_PDF import pdf  # import module
+from  Py_PDF.PDF import pdf
 
 
 # GUI Class

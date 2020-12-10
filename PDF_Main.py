@@ -1,8 +1,6 @@
 # import modules
-from pathlib import Path
-import PyPDF2
-from Py_PDF import pdf
 from Py_PDF import pdfGUI
+from Py_PDF.PDF import pdf
 
 
 # Main (Testing the Methods)
