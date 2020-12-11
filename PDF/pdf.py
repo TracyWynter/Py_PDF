@@ -1,8 +1,10 @@
-# imports
+# == imports
+# Note: PyPDF2 does not work well with Python 3
 import PyPDF4   # For python 3.* and above
 
-
+# =================================
 # PDF Methods
+# =================================
 
 
 # Merge PDFs
@@ -54,7 +56,7 @@ def pdf_split(ori_pdf, split_pages: list):
                 # Setting the end position for the next split
                 end = split_pages[i+1]
             except IndexError:  # Test if there is out of bound
-                print('Out of bound')
+                print('Page Out Of Bound')
 
     # Close file obj
     pdfFileObj.close()
@@ -62,7 +64,7 @@ def pdf_split(ori_pdf, split_pages: list):
 
 # Encrypt PDF
 def pdf_encrypt(ori_pdf, lock_pdf, pw):
-    pdfWriter = PyPDF4.PdfFileWriter()  # Writer object
+    pdfWriter = PyPDF4.PdfFileWriter()          # Writer object
     pdfReader = PyPDF4.PdfFileReader(ori_pdf)   # Reader Object
 
     # Only encrypt if the file is not encrypted
@@ -72,7 +74,7 @@ def pdf_encrypt(ori_pdf, lock_pdf, pw):
 
         pdfWriter.encrypt(user_pwd=pw, use_128bit=True)     # Encrypt using 128 bits
         # Output to writer object
-        with open(lock_pdf + '.pdf', 'wb') as file:
+        with open(lock_pdf + '.pdf', 'wb') as file:         # Write binary
             pdfWriter.write(file)
         print("'%s' is generated" % lock_pdf)
     else:
