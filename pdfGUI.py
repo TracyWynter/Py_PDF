@@ -51,6 +51,7 @@ class PDFGUI:
         # =================================
         #  Merge Tab
         # =================================
+        file_list:list = StringVar()
         ttk.Entry(self.mergeTab).place(x=10, y=10)
         ttk.Button(self.mergeTab, text="Select PDF",
                    command=lambda: self.browse_multi_pdf()).place(x=50, y=50)  # Select pdf
@@ -67,7 +68,7 @@ class PDFGUI:
 
         # Select PDF
         self.split_select_btn = ttk.Button(self.split_canvas, text="Select PDF",
-                                           command=lambda: self.browseOnePDF(self.split_infile))  # Click to select PDF
+                                           command=lambda: self.browse_pdf(self.split_infile))  # Click to select PDF
         self.split_file_label = ttk.Label(self.split_canvas,
                                           textvariable=self.split_infile)  # Show Selected File Name
 
@@ -202,6 +203,14 @@ class PDFGUI:
                 print('Output file not set')
         else:
             print('PDF file not selected')
+
+    # Split file
+    def split_pdf(self, filename):
+        pass
+
+    # Merge file
+    def merge_pdf(self):
+        pass
 
     # File browser for One PDF
     @staticmethod  # For multiple use case (non "self" methods)
