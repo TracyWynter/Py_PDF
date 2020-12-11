@@ -16,8 +16,8 @@ class PDFGUI:
 
     def __init__(self, master):     # master is the parent widget
         self.master = master        # form
-        master.title('IceQuinn\'s PDFReader')   # Window's Title
-        scrollBar = Scrollbar(self.master)      # Unsure of what to put in
+        master.title('IceQuinn\'s PDFReader')  # Window's Title
+        scrollBar = Scrollbar(self.master)  # Unsure of what to put in
 
         # ============= Parent Tab =================
         self.tab_parent = ttk.Notebook(self.master)
@@ -33,18 +33,29 @@ class PDFGUI:
         #  Editor Tab
         # =================================
         # Need more time for this feature
-        self.editor_note = ttk.Label(self.editorTab, text="Work In Progress")
-        selection_btn = ttk.Button(self.editorTab, text="SELECT PDF")
-        selection_btn.place(x=500, y=40)
+        selected_file = StringVar()     # Show selected file name
+        # === Widget for Editor Tab
+        self.edit_canvas = Canvas(self.editorTab, height=500, width=500, highlightthickness=0)  # Canvas without border
+
+        editor_note = ttk.Label(self.edit_canvas, text="Work In Progress")
+        selection_btn = ttk.Button(self.edit_canvas, text="SELECT PDF", command=lambda: self.browse_pdf(selected_file))
+        file_name = ttk.Label(self.edit_canvas, textvariable=selected_file)
+
+        # === ADD Widget for Split Tab (Row By Row)
+        editor_note.grid(column=0, row=0, padx=20, pady=20)
+        selection_btn.grid(column=0, row=1)
+        file_name.grid(column=0, row=2)
+        self.edit_canvas.place(relx=0.5, rely=0.3, anchor=CENTER)  # Place the canvas in the center
+
 
         # =================================
         #  Merge Tab
         # =================================
         ttk.Entry(self.mergeTab).place(x=10, y=10)
         ttk.Button(self.mergeTab, text="Select PDF",
-                   command=lambda: self.browse_multi_pdf()).place(x=50, y=50)           # Select pdf
+                   command=lambda: self.browse_multi_pdf()).place(x=50, y=50)  # Select pdf
 
-        ttk.Button(self.mergeTab, text="MERGE TAB").place(x=100, y=100)     # Merge pdf
+        ttk.Button(self.mergeTab, text="MERGE TAB").place(x=100, y=100)  # Merge pdf
 
         # =================================
         # Split Tab
@@ -53,12 +64,12 @@ class PDFGUI:
 
         # === Widget for Split Tab
         self.split_canvas = Canvas(self.splitTab, height=300, width=300, highlightthickness=0)  # Canvas without border
-        
+
         # Select PDF
         self.split_select_btn = ttk.Button(self.split_canvas, text="Select PDF",
                                            command=lambda: self.browseOnePDF(self.split_infile))  # Click to select PDF
         self.split_file_label = ttk.Label(self.split_canvas,
-                                          textvariable=self.split_infile)    # Show Selected File Name
+                                          textvariable=self.split_infile)  # Show Selected File Name
 
         # Split Button
         self.split_btn = ttk.Button(self.split_canvas, text="Split PDF",
@@ -82,24 +93,24 @@ class PDFGUI:
 
         # Select PDF
         self.e_select_btn = ttk.Button(self.encrypt_canvas, text="Select PDF",
-                                       command=lambda: self.browse_pdf(self.lock_infile))   # Click to select PDF
-        self.e_file_label = ttk.Label(self.encrypt_canvas, textvariable=self.lock_infile)   # Show Selected File Name
+                                       command=lambda: self.browse_pdf(self.lock_infile))  # Click to select PDF
+        self.e_file_label = ttk.Label(self.encrypt_canvas, textvariable=self.lock_infile)  # Show Selected File Name
 
         # Encryption File Name
-        self.lock_pdf_label = ttk.Label(self.encrypt_canvas, text='Encrypted File Name: ')      # Encryption File Label
-        self.lock_pdf_field = ttk.Entry(self.encrypt_canvas, textvariable=self.lock_outfile)    # Entry Widget Name
+        self.lock_pdf_label = ttk.Label(self.encrypt_canvas, text='Encrypted File Name: ')  # Encryption File Label
+        self.lock_pdf_field = ttk.Entry(self.encrypt_canvas, textvariable=self.lock_outfile)  # Entry Widget Name
 
         # Password
-        self.e_password_label = ttk.Label(self.encrypt_canvas, text='Password')     # Password label
+        self.e_password_label = ttk.Label(self.encrypt_canvas, text='Password')  # Password label
         self.e_password_field = ttk.Entry(self.encrypt_canvas, show="*",
                                           textvariable=self.lock_password)  # Password Widget Name
 
         # Encryption Button
-        self.encrypt_btn = ttk.Button(self.encrypt_canvas, text="Encrypt PDF",
+        self.encrypt_btn = ttk.Button(self.encrypt_canvas, text="Lock PDF",
                                       command=lambda: self.lock_file())  # Validate and Encrypt
 
         # === ADD Widget for Encryption Tab (Row By Row)
-        self.e_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2)
+        self.e_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
         self.e_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=2)
         self.lock_pdf_label.grid(column=0, row=4, padx=20, pady=20)
         self.lock_pdf_field.grid(column=1, row=4, padx=20, pady=20)
@@ -116,14 +127,34 @@ class PDFGUI:
         self.unlock_infile = StringVar()    # Chosen locked PDF
         self.unlock_outfile = StringVar()   # Unlocked Output PDF
         self.unlock_password = StringVar()  # Password to unlock PDF
-
+        # === Widget for Decryption Tab
+        self.decrypt_canvas = Canvas(self.decryptTab, height=300, width=300,
+                                     highlightthickness=0)  # Center without border
         # Select PDF
-
+        self.d_select_btn = ttk.Button(self.decrypt_canvas, text="Select PDF",
+                                       command=lambda: self.browse_pdf(self.unlock_infile))  # Click to select PDF
+        self.d_file_label = ttk.Label(self.decrypt_canvas, textvariable=self.unlock_infile)  # Show Selected File Name
         # Output File Name
+        self.outfile_label = ttk.Label(self.decrypt_canvas, text='Encrypted File Name: ')  # Encryption File Label
+        self.outfile_field = ttk.Entry(self.decrypt_canvas, textvariable=self.unlock_outfile)  # Entry Widget Name
 
         # Password
-
+        self.d_password_label = ttk.Label(self.decrypt_canvas, text='Password')  # Password label
+        self.d_password_field = ttk.Entry(self.decrypt_canvas, show="*",
+                                          textvariable=self.unlock_password)  # Password Widget Name
         # Decryption Button
+        self.decrypt_btn = ttk.Button(self.decrypt_canvas, text="Unlock PDF",
+                                      command=lambda: self.unlock_file())  # Validate and Encrypt
+        # === ADD Widget for Decryption Tab (Row By Row)
+        self.d_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
+        self.d_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=2)
+        self.outfile_label.grid(column=0, row=4, padx=20, pady=20)
+        self.outfile_field.grid(column=1, row=4, padx=20, pady=20)
+        self.d_password_label.grid(column=0, row=5, padx=20, pady=20)
+        self.d_password_field.grid(column=1, row=5, padx=20, pady=20)
+
+        self.decrypt_btn.grid(column=0, row=6, padx=20, pady=20, columnspan=2)
+        self.decrypt_canvas.place(relx=0.5, rely=0.3, anchor=CENTER)  # Place the canvas in the center
 
         # =================================
         # Conversion Tab (File Format Convert)
@@ -158,16 +189,28 @@ class PDFGUI:
             print('PDF file not selected')
 
     # Decrypt file
-    # def unlockFile(self):
+    def unlock_file(self):
+        if not self.unlock_infile.get() == '' or self.unlock_infile.get() is None:              # PDF selected
+            if not self.unlock_outfile.get() == '' or self.unlock_outfile.get() is None:        # Output file name given
+                if not self.unlock_password.get() == '' or self.unlock_password.get() is None:  # Password not null
+                    print('pdf Name: %s\n Unlocked pdf Name: %s\nPassword: %s' %
+                          (self.unlock_infile.get(), self.unlock_outfile.get(), self.unlock_password.get()))
+                    pdf.pdf_decrypt(self.unlock_infile.get(), self.unlock_outfile.get(), self.unlock_password.get())
+                else:
+                    print('Password not set')
+            else:
+                print('Output file not set')
+        else:
+            print('PDF file not selected')
 
     # File browser for One PDF
-    @staticmethod    # For multiple use case (non "self" methods)
+    @staticmethod  # For multiple use case (non "self" methods)
     def browse_pdf(filename):
         file = tk.filedialog.askopenfilename(title="Select PDF", filetypes=[('PDF', '*.pdf')])
         filename.set(file.split('/')[-1])  # Set File name not full path
 
     # File Browser for Multiple PDF
-    @staticmethod    # For multiple use case (non "self" methods)
+    @staticmethod  # For multiple use case (non "self" methods)
     def browse_multi_pdf(multi_pdf):
         file_list = tk.filedialog.askopenfilenames(title="Select Multiple PDF", filetypes=[('PDF', '*.pdf')])
         multi_pdf.set(file_list.split('/')[-1])
@@ -181,7 +224,7 @@ class PDFGUI:
 
 # Calling GUI Program
 def gui_main():
-    main = tk.Tk()              # Main window object
+    main = tk.Tk()  # Main window object
     main.configure(bg='black')  # parent widget bg color
 
     # == Window Size Configuration
@@ -191,4 +234,4 @@ def gui_main():
 
     gui = PDFGUI(main)  # Initialising GUI class
     main.protocol("WM_DELETE_WINDOW", gui.on_closing)  # Delete on closing method
-    main.mainloop()     # Call to Execute GUI
+    main.mainloop()  # Call to Execute GUI
