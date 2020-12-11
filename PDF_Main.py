@@ -13,7 +13,7 @@ def main():
     inputPDF = 'ProjSpec.pdf'
     lockPDF = 'Lock_PDF.pdf'
     unlockPDF = 'Unlock_PDF.pdf'
-    split_file = 'RevTest.pdf'
+    split_file = 'Test Files/RevTest.pdf'
     pdfPW = 'keys'
 
     # Split pages in int list
