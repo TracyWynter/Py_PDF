@@ -62,10 +62,10 @@ class PDFGUI:
         # =================================
         #  Merge Tab
         # =================================
-        file_list: list = StringVar()
+        file_list = StringVar()  # Store multiple pdfs
         ttk.Entry(self.mergeTab).place(x=10, y=10)
         ttk.Button(self.mergeTab, text="Select PDF",
-                   command=lambda: self.browse_multi_pdf()).place(x=50, y=50)  # Select pdf
+                   command=lambda: self.browse_multi_pdf(file_list)).place(x=50, y=50)  # Select pdf
 
         ttk.Button(self.mergeTab, text="MERGE TAB").place(x=100, y=100)  # Merge pdf
 
@@ -102,6 +102,10 @@ class PDFGUI:
         # === Widget for Encryption Tab
         self.encrypt_canvas = Canvas(self.encryptTab, height=300, width=300,
                                      highlightthickness=0, takefocus=False)  # Center without border
+        # Instruction Label
+        encryption_instruction = ttk.Label(self.encrypt_canvas,
+                                           text="1. Choose the PDF to Protect\n\n" +
+                                                "2. Provide Password to lock the file")
 
         # Select PDF
         self.e_select_btn = ttk.Button(self.encrypt_canvas, text="Select PDF",
@@ -124,8 +128,9 @@ class PDFGUI:
                                       command=lambda: self.lock_file(), takefocus=False)  # Validate and Encrypt
 
         # === ADD Widget for Encryption Tab (Row By Row)
-        self.e_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
-        self.e_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=2)
+        encryption_instruction.grid(column=0, row=1, padx=20, pady=20, columnspan=2)
+        self.e_select_btn.grid(column=0, row=2, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
+        self.e_file_label.grid(column=0, row=3, padx=20, pady=20, columnspan=2)
         self.lock_pdf_label.grid(column=0, row=4, padx=20, pady=20)
         self.lock_pdf_field.grid(column=1, row=4, padx=20, pady=20)
         self.e_password_label.grid(column=0, row=5, padx=20, pady=20)
@@ -173,6 +178,17 @@ class PDFGUI:
         # =================================
         # Conversion Tab (File Format Convert)
         # =================================
+        conversion_canvas = Canvas(self.conversionTab)
+        # == Widgets for Conversion Tab
+        conversion_instruction = ttk.Label(conversion_canvas,
+                                           text="1. Select the format you want your PDF to convert to.")
+        format_label = ttk.Label(conversion_canvas, text="File Format")
+
+        # == Add the widgets to Conversion Tab
+        conversion_instruction.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
+        format_label.grid(column=0, row=1, padx=10, pady=10)
+
+        conversion_canvas.place(relx=0.5, rely=0.3, anchor=CENTER)  # Place the canvas in the center
 
         # == Parent tab configure (Adding tabs)
         self.tab_parent.add(self.editorTab, text="Edit PDF")
