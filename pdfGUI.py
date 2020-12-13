@@ -5,6 +5,7 @@ from tkinter import filedialog
 from tkinter import *
 # from tkinter.ttk import *   # Style (unsure if going to use)
 from tkinter import messagebox as mb
+from termcolor import colored
 
 # == Project Packages
 from Py_PDF.PDF import pdf
@@ -60,14 +61,14 @@ class PDFGUI:
         self.edit_canvas.place(relx=0.5, rely=0.3, anchor=CENTER)  # Place the canvas in the center
 
         # =================================
-        #  Merge Tab
+        #  Merge Tab (Need change to grid)
         # =================================
         file_list = StringVar()  # Store multiple pdfs
         ttk.Entry(self.mergeTab).place(x=10, y=10)
         ttk.Button(self.mergeTab, text="Select PDF",
                    command=lambda: self.browse_multi_pdf(file_list)).place(x=50, y=50)  # Select pdf
 
-        ttk.Button(self.mergeTab, text="MERGE TAB").place(x=100, y=100)  # Merge pdf
+        ttk.Button(self.mergeTab, text="MERGE TAB").place(relx=0.3, rely=0.5)  # Merge pdf
 
         # =================================
         # Split Tab
@@ -190,26 +191,38 @@ class PDFGUI:
         # =================================
         # Conversion Tab (File Format Convert)
         # =================================
-        self.file_format = StringVar()  # File Format
+        self.file_format = StringVar()  # Selected File Format
+        self.convert_infile = StringVar()   # Selected PDF
 
-        self.conversion_canvas = Canvas(self.conversionTab, width=500, height=500, highlightthickness=0,
+        self.conversion_canvas = Canvas(self.conversionTab, width=200, height=500, highlightthickness=0,
                                         takefocus=False)
         # == Widgets for Conversion Tab
         self.conversion_instruction = ttk.Label(self.conversion_canvas,
                                                 text="1. Select the format you want your PDF to convert to.")
-        self.format_label = ttk.Label(self.conversion_canvas, text="File Format")
+        self.format_label = ttk.Label(self.conversion_canvas, text="File Format")   # Instructions
         self.format_field = ttk.Combobox(self.conversion_canvas, state="readonly", textvariable=self.file_format,
-                                         width=30, takefocus=False)
-        self.format_field.bind("<FocusIn>", self.combobox_deselect)
-        self.format_field['values'] =[
+                                         width=50, takefocus=False)     # File Format Selection
+        self.format_field.bind("<FocusIn>", self.combobox_deselect)     # Remove the highlight
+        default = "Select File Format"  # Placeholder
+        default = default.rjust(len(default)+30, ' ')   # Padding for the text
+        # ComboBox Options
+        self.format_field['values'] = [
+            default,
             "Word (*.docx)",
             "Portable Network Graphics (*.png)",
             "Joint Photographic Expert Group (*.jpeg)"]
+        self.format_field.current(0)
+        self.conversion_select_btn = ttk.Button(self.conversion_canvas, text="Select PDF",
+                                                command=lambda: self.browse_pdf(self.convert_infile),
+                                                takefocus=False)    # PDF Selection
+        self.conversion_infile_label = ttk.Label(self.conversion_canvas, textvariable=self.convert_infile)
 
         # == Add the widgets to Conversion Tab
         self.conversion_instruction.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
         self.format_label.grid(column=0, row=1, padx=10, pady=10)
         self.format_field.grid(column=1, row=1, padx=10, pady=10, columnspan=2)
+        self.conversion_select_btn.grid(column=0, row=2, padx=10, pady=10, columnspan=3)
+        self.conversion_infile_label.grid(column=0, row=3, padx=10, pady=10, columnspan=3)
 
         self.conversion_canvas.place(relx=0.5, rely=0.15, anchor=CENTER)  # Place the canvas in the center
 
