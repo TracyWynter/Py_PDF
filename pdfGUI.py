@@ -13,7 +13,7 @@ from Py_PDF.PDF import pdf
 
 # GUI Class
 class PDFGUI:
-    selected_PDF = ''
+
 
     def __init__(self, master):  # master is the parent widget
         self.master = master  # form
@@ -31,6 +31,10 @@ class PDFGUI:
                                         # })],
                                         })]
                      )
+
+        # Some variable
+        self.current_dir = StringVar()
+        # self.current_dir.set('C:\\Users')  # Have a default current directory (prevent null)
 
         # ============= Parent Tab =================
         self.tab_parent = ttk.Notebook(self.master, takefocus=False)
@@ -63,12 +67,16 @@ class PDFGUI:
         # =================================
         #  Merge Tab (Need change to grid)
         # =================================
-        file_list = StringVar()  # Store multiple pdfs
-        ttk.Entry(self.mergeTab).place(x=10, y=10)
-        ttk.Button(self.mergeTab, text="Select PDF",
-                   command=lambda: self.browse_multi_pdf(file_list)).place(x=50, y=50)  # Select pdf
+        file_list = StringVar()  # Store multiple pdfs? (How to store the list of pdfs)
 
-        ttk.Button(self.mergeTab, text="MERGE TAB").place(relx=0.3, rely=0.5)  # Merge pdf
+        # == Widget for Merge Tab
+        self.merge_canvas = Canvas(self.mergeTab, height=300, width=300, highlightthickness=0)  # Canvas without border
+        self.merge_select = ttk.Button(self.merge_canvas, text="Select PDF",
+                                       command=lambda: self.browse_multi_pdf(file_list))  # Select pdf
+
+        # == Add widget to Merge Tab
+        self.merge_select.grid(column=0, row=0)
+        self.merge_canvas.place(relx=0.5, rely=0.2, anchor=CENTER)  # Place the canvas in the center
 
         # =================================
         # Split Tab
@@ -249,9 +257,9 @@ class PDFGUI:
         if not self.lock_infile.get() == '' or self.lock_infile.get() is None:              # PDF selected
             if not self.lock_outfile.get() == '' or self.lock_outfile.get() is None:        # Output file name given
                 if not self.lock_password.get() == '' or self.lock_password.get() is None:  # Password not null
-                    print('pdf Name: %s\n lock pdf Name: %s\nPassword: %s' %
-                          (self.lock_infile.get(), self.lock_outfile.get(), self.lock_password.get()))
-                    pdf.pdf_encrypt(self.lock_infile.get(), self.lock_outfile.get(), self.lock_password.get())
+                    print('pdf Name: %s\nLock pdf Name: %s\nPassword: %s' %
+                          (self.current_dir.get() + self.lock_infile.get(), self.lock_outfile.get(), self.lock_password.get()))
+                    pdf.pdf_encrypt(self.current_dir.get() + self.lock_infile.get(), self.lock_outfile.get(), self.lock_password.get())
                 else:
                     self.lock_error.set('Password not set')
             else:
@@ -289,15 +297,18 @@ class PDFGUI:
     # ==== ERROR MESSAGES  ====
 
     # File browser for One PDF
-    @staticmethod  # For multiple use case (non "self" methods)
-    def browse_pdf(filename):
+    # @staticmethod  # For multiple use case (non "self" methods)
+    def browse_pdf(self, filename):
         file = tk.filedialog.askopenfilename(title="Select PDF", filetypes=[('PDF', '*.pdf')])
         filename.set(file.split('/')[-1])  # Set File name not full path
+        self.current_dir.set(file[:len(file)-len(filename.get())] + '/')  # Setting the current directory
+        print(self.current_dir.get())   # Debugging
 
     # File Browser for Multiple PDF
     @staticmethod  # For multiple use case (non "self" methods)
     def browse_multi_pdf(multi_pdf):
         file_list = tk.filedialog.askopenfilenames(title="Select Multiple PDF", filetypes=[('PDF', '*.pdf')])
+        print('This is filelist:', file_list)
         multi_pdf.set(file_list.split('/')[-1])
 
     # Closing Prompt for Window
