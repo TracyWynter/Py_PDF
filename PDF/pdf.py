@@ -1,6 +1,7 @@
 # == imports
 # Note: PyPDF2 does not work well with Python 3
 import PyPDF4   # For python 3.* and above
+import os
 
 # =================================
 # PDF Methods
@@ -66,25 +67,29 @@ def pdf_split(ori_pdf, split_pages: list):
 def pdf_encrypt(ori_pdf, lock_pdf, pw):
     pdfWriter = PyPDF4.PdfFileWriter()          # Writer object
     pdfReader = PyPDF4.PdfFileReader(ori_pdf)   # Reader Object
+    home = os.path.expanduser('~')
+    path_dir = os.path.join(home, 'Downloads\\')    # Output file directory
 
     # Only encrypt if the file is not encrypted
-    if not pdfReader.isEncrypted:
+    if not pdfReader.isEncrypted:   # Check if it is encrypted
         for page in range(pdfReader.getNumPages()):
             pdfWriter.addPage(pdfReader.getPage(page))
 
         pdfWriter.encrypt(user_pwd=pw, use_128bit=True)     # Encrypt using 128 bits
         # Output to writer object
-        with open(lock_pdf + '.pdf', 'wb') as file:         # Write binary
+        with open(path_dir + lock_pdf + '.pdf', 'wb') as file:         # Write binary
             pdfWriter.write(file)
         print("'%s' is generated" % lock_pdf)
     else:
         print("'%s' is already encrypted" % ori_pdf)
 
 
-# Decrypt PDf
+# Decrypt PDF
 def pdf_decrypt(ori_pdf, unlock_pdf, pw):
     pdf_file = PyPDF4.PdfFileReader(ori_pdf)    # Open PDF with Reader object
     pdfWriter = PyPDF4.PdfFileWriter()
+    home = os.path.expanduser('~')
+    path_dir = os.path.join(home, 'Downloads\\')    # Output file directory
     if pdf_file.isEncrypted:    # Check if is encrypted
         pdf_file.decrypt(pw)    # Decrypt
         # Iterate through unlock file and add every page to new file
@@ -92,7 +97,7 @@ def pdf_decrypt(ori_pdf, unlock_pdf, pw):
             pdfWriter.addPage(pdf_file.getPage(page))
 
         # Output decrypted pdf to new file
-        with open(unlock_pdf, 'wb') as file:
+        with open(path_dir + unlock_pdf, 'wb') as file:
             pdfWriter.write(file)
         print("Decrypted PDF File '%s' is generated" % unlock_pdf)
     else:
