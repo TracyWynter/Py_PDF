@@ -5,7 +5,8 @@ from tkinter import filedialog
 from tkinter import *
 # from tkinter.ttk import *   # Style (unsure if going to use)
 from tkinter import messagebox as mb
-from termcolor import colored
+
+
 
 # == Project Packages
 from Py_PDF.PDF import pdf
@@ -51,10 +52,12 @@ class PDFGUI:
         # Need more time for this feature
         selected_file = StringVar()  # Show selected file name
         # === Widget for Editor Tab
-        self.edit_canvas = Canvas(self.editorTab, height=500, width=500, highlightthickness=0)  # Canvas without border
+        self.edit_canvas = Canvas(self.editorTab, height=500, width=500, highlightthickness=0,
+                                  takefocus=False)  # Canvas without border
 
         editor_note = ttk.Label(self.edit_canvas, text="Work In Progress")
-        selection_btn = ttk.Button(self.edit_canvas, text="SELECT PDF", command=lambda: self.browse_pdf(selected_file))
+        selection_btn = ttk.Button(self.edit_canvas, text="SELECT PDF", command=lambda: self.browse_pdf(selected_file),
+                                   takefocus=False)
         file_name = ttk.Label(self.edit_canvas, textvariable=selected_file)
 
         # === ADD Widget for Split Tab (Row By Row)
@@ -69,9 +72,10 @@ class PDFGUI:
         file_list = StringVar()  # Store multiple pdfs? (How to store the list of pdfs)
 
         # == Widget for Merge Tab
-        self.merge_canvas = Canvas(self.mergeTab, height=300, width=300, highlightthickness=0)  # Canvas without border
+        self.merge_canvas = Canvas(self.mergeTab, height=300, width=300, highlightthickness=0,
+                                   takefocus=False)  # Canvas without border
         self.merge_select = ttk.Button(self.merge_canvas, text="Select PDF",
-                                       command=lambda: self.browse_multi_pdf(file_list))  # Select pdf
+                                       command=lambda: self.browse_multi_pdf(file_list), takefocus=False)  # Select pdf
 
         # == Add widget to Merge Tab
         self.merge_select.grid(column=0, row=0)
@@ -83,11 +87,13 @@ class PDFGUI:
         self.split_infile = StringVar()  # The selected pdf for splitting
 
         # === Widget for Split Tab
-        self.split_canvas = Canvas(self.splitTab, height=300, width=300, highlightthickness=0)  # Canvas without border
+        self.split_canvas = Canvas(self.splitTab, height=300, width=300, highlightthickness=0,
+                                   takefocus=False)  # Canvas without border
 
         # Select PDF
         self.split_select_btn = ttk.Button(self.split_canvas, text="Select PDF",
-                                           command=lambda: self.browse_pdf(self.split_infile))  # Click to select PDF
+                                           command=lambda: self.browse_pdf(self.split_infile),
+                                           takefocus=False)  # Click to select PDF
         self.split_file_label = ttk.Label(self.split_canvas,
                                           textvariable=self.split_infile)  # Show Selected File Name
 
@@ -169,7 +175,7 @@ class PDFGUI:
                                        takefocus=False)  # Click to select PDF
         self.d_file_label = ttk.Label(self.decrypt_canvas, textvariable=self.unlock_infile)  # Show Selected pdf
         # Output File Name
-        self.outfile_label = ttk.Label(self.decrypt_canvas, text='Encrypted File Name: ')  # Encryption File Label
+        self.outfile_label = ttk.Label(self.decrypt_canvas, text='Unlocked File Name: ')  # Encryption File Label
         self.outfile_field = ttk.Entry(self.decrypt_canvas,
                                        textvariable=self.unlock_outfile, takefocus=False)  # Entry Widget Name
 
@@ -261,6 +267,13 @@ class PDFGUI:
                            self.lock_outfile.get(), self.lock_password.get()))
                     pdf.pdf_encrypt(self.current_dir.get() + self.lock_infile.get(),
                                     self.lock_outfile.get(), self.lock_password.get())
+                    # Message Box
+                    mb.showinfo('Success', '%s been successfully generated in \'Download\' folder'
+                                % self.lock_outfile.get())
+                    # Delete first to the last
+                    self.lock_pdf_field.delete(0, 'end')    # Encrypt entry
+                    self.e_password_field.delete(0, 'end')  # Password entry
+
                 else:
                     self.lock_error.set('Password not set')
             else:
