@@ -97,7 +97,7 @@ def pdf_decrypt(ori_pdf, unlock_pdf, pw):
             pdfWriter.addPage(pdf_file.getPage(page))
 
         # Output decrypted pdf to new file
-        with open(path_dir + unlock_pdf, 'wb') as file:
+        with open(path_dir + unlock_pdf + '.pdf', 'wb') as file:
             pdfWriter.write(file)
         print("Decrypted PDF File '%s' is generated" % unlock_pdf)
     else:
