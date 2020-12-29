@@ -163,7 +163,6 @@ class PDFGUI:
         # Decryption Tab
         # =================================
         self.unlock_infile = StringVar()  # Chosen locked PDF
-        self.unlock_outfile = StringVar()  # Unlocked Output PDF
         self.unlock_password = StringVar()  # Password to unlock PDF
         self.unlock_error = StringVar()  # Display error message
         # === Widget for Decryption Tab
@@ -174,10 +173,6 @@ class PDFGUI:
                                        command=lambda: self.browse_pdf(self.unlock_infile),
                                        takefocus=False)  # Click to select PDF
         self.d_file_label = ttk.Label(self.decrypt_canvas, textvariable=self.unlock_infile)  # Show Selected pdf
-        # Output File Name
-        self.unlock_pdf_label = ttk.Label(self.decrypt_canvas, text='Output File Name: ')  # Encryption File Label
-        self.unlock_pdf_field = ttk.Entry(self.decrypt_canvas,
-                                          textvariable=self.unlock_outfile, takefocus=False)  # Entry Widget Name
 
         # Password
         self.d_password_label = ttk.Label(self.decrypt_canvas, text='Password')  # Password label
@@ -192,10 +187,8 @@ class PDFGUI:
         # === ADD Widget for Decryption Tab (Row By Row)
         self.d_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
         self.d_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=2)
-        self.unlock_pdf_label.grid(column=0, row=4, padx=20, pady=20)
-        self.unlock_pdf_field.grid(column=1, row=4, padx=20, pady=20)
-        self.d_password_label.grid(column=0, row=5, padx=20, pady=20)
-        self.d_password_field.grid(column=1, row=5, padx=20, pady=20)
+        self.d_password_label.grid(column=0, row=4, padx=20, pady=20)
+        self.d_password_field.grid(column=1, row=4, padx=20, pady=20)
 
         self.decrypt_btn.grid(column=0, row=6, padx=20, pady=20, columnspan=2)
         self.decrypt_error.grid(column=0, row=7, padx=10, pady=10, columnspan=2)
@@ -285,24 +278,19 @@ class PDFGUI:
     # Decrypt file
     def unlock_file(self):
         if not self.unlock_infile.get() == '' or self.unlock_infile.get() is None:  # PDF selected
-            if not self.unlock_outfile.get() == '' or self.unlock_outfile.get() is None:  # Output file name given
-                if not self.unlock_password.get() == '' or self.unlock_password.get() is None:  # Password not null
-                    print('pdf Name: %s\n Unlocked pdf Name: %s\nPassword: %s' %
-                          (self.current_dir.get() + self.unlock_infile.get(),
-                           self.unlock_outfile.get(), self.unlock_password.get()))
-                    pdf.pdf_decrypt(self.current_dir.get() + self.unlock_infile.get(),
-                                    self.unlock_outfile.get(), self.unlock_password.get())  # Calling decrypt function
-                    # Message Box
-                    mb.showinfo('Success', '%s been successfully generated in \'Download\' folder'
-                                % self.unlock_outfile.get())
-                    # Reset fields to empty
-                    self.unlock_infile.set('')    # Label set as empty
-                    self.unlock_pdf_field.delete(0, 'end')    # Encrypt entry
-                    self.d_password_field.delete(0, 'end')  # Password entry
-                else:
-                    self.unlock_error.set('Password not set')
+            if not self.unlock_password.get() == '' or self.unlock_password.get() is None:  # Password not null
+                print('pdf Name: %s\nPassword: %s' %
+                      (self.current_dir.get() + self.unlock_infile.get(), self.unlock_password.get()))
+                pdf.pdf_decrypt(self.current_dir.get() + self.unlock_infile.get(),
+                                self.unlock_password.get())  # Calling decrypt function
+                # Message Box
+                mb.showinfo('Success', 'File:unlocked_%s has been successfully generated in \'Download\' folder'
+                            % self.unlock_infile.get())     # Need to change this hardcode piece
+                # Reset fields to empty
+                self.unlock_infile.set('')  # Label set as empty
+                self.d_password_field.delete(0, 'end')  # Password entry
             else:
-                self.unlock_error.set('Output file not set')
+                self.unlock_error.set('Password not set')
         else:
             self.unlock_error.set('PDF file not selected')
 

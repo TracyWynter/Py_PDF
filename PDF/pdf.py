@@ -85,24 +85,42 @@ def pdf_encrypt(ori_pdf, lock_pdf, pw):
 
 
 # Decrypt PDF
-def pdf_decrypt(ori_pdf, unlock_pdf, pw):
+def pdf_decrypt(ori_pdf, pw):
+    input_file = ori_pdf.split('/')[-1]  # Input file w/o full file path
+    file_dir = ori_pdf[:len(ori_pdf) - len(input_file)]  # Input file dir (In case)
     pdf_file = PyPDF4.PdfFileReader(ori_pdf)    # Open PDF with Reader object
     pdfWriter = PyPDF4.PdfFileWriter()
     home = os.path.expanduser('~')
     path_dir = os.path.join(home, 'Downloads\\')    # Output file directory
+    unlock_pdf = path_dir + 'unlocked_' + input_file  # Output file name (Default)
+
     if pdf_file.isEncrypted:    # Check if is encrypted
         pdf_file.decrypt(pw)    # Decrypt
         # Iterate through unlock file and add every page to new file
         for page in range(pdf_file.getNumPages()):
             pdfWriter.addPage(pdf_file.getPage(page))
+        file_present: bool = True   # Default set to true
+        i = 0  # Indicator for duplicate files
+        file_name = input_file.split('.')[0]    # Without '.pdf
+        # Check if the file is present
+        while file_present:
+            try:  # Increment by 1 if file is present
+                open(unlock_pdf)  # Check if can successfully open the file
+                i += 1
+                unlock_pdf = path_dir + 'unlocked_' + file_name + '_' + str(i) + '.pdf'  # Change file name
+                print('ok')
+            except IOError:
+                file_present = False
 
-        # Output decrypted pdf to new file
-        with open(path_dir + unlock_pdf + '.pdf', 'wb') as file:
+        with open(unlock_pdf, 'wb') as file:    # 'with' helps with closing the file
             pdfWriter.write(file)
+
         print("Decrypted PDF File '%s' is generated" % unlock_pdf)
     else:
         print("'%s' is not encrypted" % ori_pdf)
 
+
+# Do we need a method to enable the display of the output file?
 
 # Edit PDF
 
