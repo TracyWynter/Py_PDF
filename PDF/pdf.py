@@ -108,7 +108,6 @@ def pdf_decrypt(ori_pdf, pw):
                 open(unlock_pdf)  # Check if can successfully open the file
                 i += 1
                 unlock_pdf = path_dir + 'unlocked_' + file_name + '_' + str(i) + '.pdf'  # Change file name
-                print('ok')
             except IOError:
                 file_present = False
 
