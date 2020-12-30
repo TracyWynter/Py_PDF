@@ -110,17 +110,16 @@ class PDFGUI:
         # Encryption Tab (Need to Beautify it)
         # =================================
         self.lock_infile = StringVar()  # Chosen Unlock PDF
-        self.lock_outfile = StringVar()  # Output locked PDF
         self.lock_password = StringVar()  # Password to lock PDF
         self.lock_error = StringVar()  # Encrypt error message
 
         # === Widget for Encryption Tab
         self.encrypt_canvas = Canvas(self.encryptTab, height=300, width=300,
                                      highlightthickness=0, takefocus=False)  # Center without border
-        # Instruction Label
-        encryption_instruction = ttk.Label(self.encrypt_canvas,
-                                           text="1. Choose the PDF to Protect\n\n" +
-                                                "2. Provide Password to lock the file")
+        # # Instruction Label
+        # encryption_instruction = ttk.Label(self.encrypt_canvas,
+        #                                    text="1. Choose the PDF to Protect\n\n" +
+        #                                         "2. Provide Password to lock the file")
 
         # Select PDF
         self.e_select_btn = ttk.Button(self.encrypt_canvas, text="Select PDF",
@@ -128,15 +127,11 @@ class PDFGUI:
                                        takefocus=False)  # Click to select PDF
         self.e_file_label = ttk.Label(self.encrypt_canvas, textvariable=self.lock_infile)  # Show Selected File Name
 
-        # Encryption File Name
-        self.lock_pdf_label = ttk.Label(self.encrypt_canvas, text='Output File Name: ')  # Encryption File Label
-        self.lock_pdf_field = ttk.Entry(self.encrypt_canvas, textvariable=self.lock_outfile,
-                                        takefocus=False)  # Entry Widget Name
-
         # Password
         self.e_password_label = ttk.Label(self.encrypt_canvas, text='Password')  # Password label
         self.e_password_field = ttk.Entry(self.encrypt_canvas, show="*",
                                           textvariable=self.lock_password, takefocus=False)  # Password Widget Name
+        self.e_password_field.bind("<ButtonPress-1>", self.password_click(self.e_password_field))
 
         # Encryption Button
         self.encrypt_btn = ttk.Button(self.encrypt_canvas, text="Lock PDF",
@@ -146,15 +141,12 @@ class PDFGUI:
         self.encrypt_error = ttk.Label(self.encrypt_canvas, textvariable=self.lock_error)
 
         # === ADD Widget for Encryption Tab (Row By Row)
-        encryption_instruction.grid(column=0, row=1, padx=20, pady=20, columnspan=2)
-        self.e_select_btn.grid(column=0, row=2, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
-        self.e_file_label.grid(column=0, row=3, padx=20, pady=20, columnspan=2)
-        self.lock_pdf_label.grid(column=0, row=4, padx=20, pady=20)
-        self.lock_pdf_field.grid(column=1, row=4, padx=20, pady=20)
-        self.e_password_label.grid(column=0, row=5, padx=20, pady=20)
-        self.e_password_field.grid(column=1, row=5, padx=20, pady=20)
+        self.e_select_btn.grid(column=0, row=1, padx=25, pady=15, columnspan=3, ipadx=30, ipady=15)
+        self.e_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=3)
+        self.e_password_label.grid(column=0, row=3, padx=20, pady=20)
+        self.e_password_field.grid(column=1, row=3, padx=20, pady=20)
 
-        self.encrypt_btn.grid(column=0, row=6, padx=20, pady=20, columnspan=2)
+        self.encrypt_btn.grid(column=2, row=3, padx=20, pady=20)
         self.encrypt_error.grid(column=0, row=7, padx=10, pady=10, columnspan=2)
 
         self.encrypt_canvas.place(relx=0.5, rely=0.5, anchor=CENTER)  # Place the canvas in the center
@@ -185,12 +177,11 @@ class PDFGUI:
         self.decrypt_error = ttk.Label(self.decrypt_canvas, textvariable=self.unlock_error)  # Show error message
 
         # === ADD Widget for Decryption Tab (Row By Row)
-        self.d_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=2, ipadx=30, ipady=15)
-        self.d_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=2)
+        self.d_select_btn.grid(column=0, row=1, padx=20, pady=20, columnspan=3, ipadx=30, ipady=15)
+        self.d_file_label.grid(column=0, row=2, padx=20, pady=20, columnspan=3)
         self.d_password_label.grid(column=0, row=4, padx=20, pady=20)
         self.d_password_field.grid(column=1, row=4, padx=20, pady=20)
-
-        self.decrypt_btn.grid(column=0, row=6, padx=20, pady=20, columnspan=2)
+        self.decrypt_btn.grid(column=3, row=4, padx=20, pady=20)
         self.decrypt_error.grid(column=0, row=7, padx=10, pady=10, columnspan=2)
         self.decrypt_canvas.place(relx=0.5, rely=0.3, anchor=CENTER)  # Place the canvas in the center
 
@@ -245,6 +236,12 @@ class PDFGUI:
     # Methods
     # =================================
 
+    @staticmethod
+    def password_click(event):
+        event.master.focus_set()
+        print(" password entry being clicked")
+
+
     # Clear Combobox Selection Highlight
     @staticmethod
     def combobox_deselect(event):
@@ -253,25 +250,20 @@ class PDFGUI:
     # Encrypt file
     def lock_file(self):
         if not self.lock_infile.get() == '' or self.lock_infile.get() is None:  # PDF selected
-            if not self.lock_outfile.get() == '' or self.lock_outfile.get() is None:  # Output file name given
-                if not self.lock_password.get() == '' or self.lock_password.get() is None:  # Password not null
-                    print('pdf Name: %s\nLock pdf Name: %s\nPassword: %s' %
-                          (self.current_dir.get() + self.lock_infile.get(),
-                           self.lock_outfile.get(), self.lock_password.get()))
-                    pdf.pdf_encrypt(self.current_dir.get() + self.lock_infile.get(),
-                                    self.lock_outfile.get(), self.lock_password.get())  # Calling encrypt function
-                    # Message Box
-                    mb.showinfo('Success', '%s been successfully generated in \'Download\' folder'
-                                % self.lock_outfile.get())
-                    # Reset fields to empty
-                    self.lock_infile.set('')    # Label set as empty
-                    self.lock_pdf_field.delete(0, 'end')    # Encrypt entry
-                    self.e_password_field.delete(0, 'end')  # Password entry
+            if not self.lock_password.get() == '' or self.lock_password.get() is None:  # Password not null
+                print('pdf Name: %s\nPassword: %s' %
+                      (self.current_dir.get() + self.lock_infile.get(), self.lock_password.get()))
+                pdf.pdf_encrypt(self.current_dir.get() + self.lock_infile.get(),
+                                self.lock_password.get())  # Calling encrypt function
+                # Message Box
+                mb.showinfo('Success', '%s been successfully generated in \'Download\' folder'
+                            % self.lock_infile.get())
+                # Reset fields to empty
+                self.lock_infile.set('')    # Label set as empty
+                self.e_password_field.delete(0, 'end')  # Password entry
 
-                else:
-                    self.lock_error.set('Password not set')
             else:
-                self.lock_error.set('Output file not set')
+                self.lock_error.set('Password not set')
         else:
             self.lock_error.set('PDF file not selected')
 
@@ -328,6 +320,7 @@ class PDFGUI:
         if self:
             if mb.askokcancel("QUIT", "Do you want to quit?"):
                 self.master.destroy()
+
 
 
 # Calling GUI Program

@@ -64,21 +64,33 @@ def pdf_split(ori_pdf, split_pages: list):
 
 
 # Encrypt PDF
-def pdf_encrypt(ori_pdf, lock_pdf, pw):
+def pdf_encrypt(ori_pdf, pw):
+    input_file = (ori_pdf.split('/')[-1]).split('.')[0]  # Input file w/o full file path and .pdf
     pdfWriter = PyPDF4.PdfFileWriter()          # Writer object
     pdfReader = PyPDF4.PdfFileReader(ori_pdf)   # Reader Object
-    home = os.path.expanduser('~')
+    home = os.path.expanduser('~')  # Windows Home Directory
     path_dir = os.path.join(home, 'Downloads\\')    # Output file directory
+    lock_pdf = path_dir + 'locked_' + input_file + '.pdf'   # Default output filename
 
     # Only encrypt if the file is not encrypted
     if not pdfReader.isEncrypted:   # Check if it is encrypted
         for page in range(pdfReader.getNumPages()):
             pdfWriter.addPage(pdfReader.getPage(page))
-
         pdfWriter.encrypt(user_pwd=pw, use_128bit=True)     # Encrypt using 128 bits
-        # Output to writer object
-        with open(path_dir + lock_pdf + '.pdf', 'wb') as file:         # Write binary
-            pdfWriter.write(file)
+
+        file_present: bool = True  # Default True to start running
+        i = 0  # i to increase if there is duplicate
+        while file_present:
+            try:
+                open(lock_pdf)
+                i += 1  # Increment by 1 if there is duplicates
+                lock_pdf = path_dir + 'locked_' + input_file + '_' + str(i) + '.pdf'  # Change file name
+            except IOError:
+                file_present = False
+
+        # 'with' helps with closing the file
+        with open(lock_pdf, 'wb') as file:         # Write binary
+            pdfWriter.write(file)  # Output to writer object
         print("'%s' is generated" % lock_pdf)
     else:
         print("'%s' is already encrypted" % ori_pdf)
@@ -89,8 +101,8 @@ def pdf_decrypt(ori_pdf, pw):
     input_file = ori_pdf.split('/')[-1]  # Input file w/o full file path
     file_dir = ori_pdf[:len(ori_pdf) - len(input_file)]  # Input file dir (In case)
     pdf_file = PyPDF4.PdfFileReader(ori_pdf)    # Open PDF with Reader object
-    pdfWriter = PyPDF4.PdfFileWriter()
-    home = os.path.expanduser('~')
+    pdfWriter = PyPDF4.PdfFileWriter()  # Writer object
+    home = os.path.expanduser('~')  # Windows Home Directory
     path_dir = os.path.join(home, 'Downloads\\')    # Output file directory
     unlock_pdf = path_dir + 'unlocked_' + input_file  # Output file name (Default)
 
